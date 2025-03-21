@@ -8,7 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 import streamlit as st
 import os
 import toml
-
+LANGCHAIN_API_KEY = "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"
 # Load secrets
 secrets = toml.load(".streamlit/secrets.toml")
 
