@@ -46,7 +46,3 @@ if user_input:
     st.write("🤖 Response:", result)
 else:
     st.write("Waiting for your prompt...")
-    st.write("🤖 Response:", result)
-else:
-    st.write("Waiting for your prompt...")
-
