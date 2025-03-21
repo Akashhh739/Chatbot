@@ -8,17 +8,29 @@ from langchain_core.output_parsers import StrOutputParser
 import streamlit as st
 import os
 import toml
-LANGCHAIN_API_KEY = "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"
-# Load secrets
-secrets = toml.load(".streamlit/secrets.toml")
+import toml
 
-# Ensure the key exists
-if "LANGCHAIN_API_KEY" in secrets.get("general", {}):
+LANGCHAIN_API_KEY = "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"
+
+# Load secrets from the file
+secrets_path = ".streamlit/secrets.toml"
+
+try:
+    secrets = toml.load(secrets_path)
+    print("Secrets Loaded:", secrets)  # Debugging
+except FileNotFoundError:
+    raise ValueError(f"secrets.toml file not found at {secrets_path}")
+
+# Ensure the key exists in the file
+if "general" in secrets and "LANGCHAIN_API_KEY" in secrets["general"]:
     langchainkey = secrets["general"]["LANGCHAIN_API_KEY"]
     print("Loaded API Key:", langchainkey)  # Debugging
-    os.environ["LANGCHAIN_API_KEY"] = langchainkey
 else:
     raise ValueError("LANGCHAIN_API_KEY not found in secrets.toml")
+
+# Use the key in your code
+print("Using API Key:", LANGCHAIN_API_KEY)  # Debugging
+
 
 load_dotenv()
 langchainkey = st.secrets.get("LANGCHAIN_API_KEY", os.getenv("LANGCHAIN_API_KEY"))
