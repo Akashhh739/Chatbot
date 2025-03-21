@@ -31,15 +31,15 @@ def generate_response(prompt, model="llama-3.3-70b-versatile", temperature=0.7, 
     except requests.exceptions.RequestException as e:
         return f"Error: {e}"
 
-st.title("Groq Chatbot via Cloudflare Gateway")
+st.title("Groq Chatbot ")
 
 # Sidebar for selecting model and parameters
 model = st.sidebar.selectbox("Select Model", ["llama-3.3-70b-versatile"])
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7)
 max_tokens = st.sidebar.slider("Max Completion Tokens", min_value=50, max_value=300, value=150)
 
-st.write("Enter your prompt and get a response:")
-user_input = st.text_input("Your prompt:")
+st.write("I am here to turn your negative persepctive")
+user_input = st.text_input("You are my chat bot, you will recieve a negative sentence from user and you are bound to change the perspective into something positive ,Make sure the output is in 2 lines")
 
 if user_input:
     result = generate_response(user_input, model, temperature, max_tokens)
