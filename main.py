@@ -39,7 +39,7 @@ def generate_response(prompt, model="llama-3.3-70b-versatile", temperature=0.7, 
     except requests.exceptions.RequestException as e:
         return f"Error: {e}"
 
-st.title("Groq Chatbot via Cloudflare Gateway")
+st.title("Groq Chatbot")
 
 # Sidebar for selecting model and parameters
 model = st.sidebar.selectbox("Select Model", ["llama-3.3-70b-versatile"])
