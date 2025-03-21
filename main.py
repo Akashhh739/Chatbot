@@ -2,11 +2,11 @@ import streamlit as st
 import requests
 
 # Your Groq API key (hardcoded)
-API_URL = "https://gateway.ai.cloudflare.com/v1/b8687b6abfce956eb0b143563cd63721/b-o-t/groq/openai/v1/chat/completions"
+API_KEY = "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"
 
 
 # Cloudflare Gateway endpoint for Chat completions
-API_URL = https://gateway.ai.cloudflare.com/v1/b8687b6abfce956eb0b143563cd63721/b-o-t/groq/openai/v1/chat/completions
+API_URL = https://gateway.ai.cloudflare.com/v1/b8687b6abfce956eb0b143563cd63721/b-o-t/groq/openai/v1/chat/completions"
 
 
 def generate_response(prompt, model, temperature, max_tokens):
