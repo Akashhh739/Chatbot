@@ -1,51 +1,52 @@
 import streamlit as st
 import requests
 
-# Define a prompt template as a string (optional)
-prompt_template = (
-    "You are my chatbot. You will receive a negative sentence from the user and must transform it into a positive perspective. "
-    "Make sure the output is in 2 lines.\n"
-    "Question: {}"
-)
+# Your Chat Groq API key (hardcoded)
+API_KEY = "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"
 
-def Generate_Response(question, model, temperature, max_tokens):
-    # Construct the prompt using the template
-    prompt = prompt_template.format(question)
-    
-    # Define your Chat Groq API endpoint (replace with your actual endpoint)
-    url = "http://localhost:8000/api/groq"  # Example URL; update as needed
+# Replace this with the actual endpoint URL for your Chat Groq API server.
+# For example, if you deploy it on Oracle Cloud or another host, update the URL accordingly.
+API_URL = "https://api.chatgroq.com/generate"  # <-- Update with your actual endpoint!
 
-    # Build the payload for Chat Groq API
+def generate_response(prompt, model, temperature, max_tokens):
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
     payload = {
+        "model": model,         # Model name (if applicable)
         "prompt": prompt,
-        "model": model,  # If Chat Groq supports different models, otherwise ignore
         "temperature": temperature,
         "max_tokens": max_tokens
     }
     
     try:
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
-        # Assuming the API returns a JSON object with a "response" key
-        return response.json().get("response", "No response key found")
+        data = response.json()
+        # Assuming the API returns a JSON object with a "response" field:
+        return data.get("response", "No response field in API result.")
     except requests.exceptions.RequestException as e:
         return f"Error: {str(e)}"
 
 # Streamlit UI
-st.title("✨ Positive Perspective Chatbot (Chat Groq)")
+st.title("Chat Groq Chatbot")
 
-# Model selection (if applicable; here we only have one option)
-model = st.sidebar.selectbox("Select Model", ["chat groq"])
+# Sidebar for parameters
+model = st.sidebar.selectbox("Select Model", ["chat_groq_model"])  # Update if you have multiple model options
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7)
 max_tokens = st.sidebar.slider("Max Tokens", min_value=50, max_value=300, value=150)
 
-st.write("🔹 Enter a negative statement, and I’ll turn it into something positive! 😊")
-user_input = st.text_input("You:")
+st.write("Enter a negative statement, and I'll transform it into a positive perspective!")
+
+user_input = st.text_input("Your prompt:")
 
 if user_input:
-    response = Generate_Response(user_input, model, temperature, max_tokens)
-    st.write("🤖 Chatbot:", response)
+    result = generate_response(user_input, model, temperature, max_tokens)
+    st.write("🤖 Response:", result)
 else:
+    st.write("Waiting for your input...")
+
     st.write("⏳ Waiting for your input...")
 
 
