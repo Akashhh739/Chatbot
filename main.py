@@ -45,8 +45,8 @@ if user_input:
     result = generate_response(user_input, model, temperature, max_tokens)
     st.write("🤖 Response:", result)
 else:
-        st.write("Waiting for your prompt...")
-        st.write("🤖 Response:", result)
+    st.write("Waiting for your prompt...")
+    st.write("🤖 Response:", result)
 else:
-        st.write("Waiting for your prompt...")
+    st.write("Waiting for your prompt...")
 
