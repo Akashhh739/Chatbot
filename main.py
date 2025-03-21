@@ -1,51 +1,55 @@
 import streamlit as st
 import requests
 
-# Your Chat Groq API key (hardcoded)
+# Your Groq API key (hardcoded)
 API_KEY = "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"
 
-# Replace this with the actual endpoint URL for your Chat Groq API server.
-# For example, if you deploy it on Oracle Cloud or another host, update the URL accordingly.
-API_URL = f"https://gateway.ai.cloudflare.com/v1/{ACCOUNT_ID}/{GATEWAY_ID}/groq"  # <-- Update with your actual endpoint!
+# Cloudflare Gateway endpoint for Chat completions
+API_URL = "https://gateway.ai.cloudflare.com/v1/b8687b6abfce956eb0b143563cd63721/b-o-t/groq/chat/completions"
 
 def generate_response(prompt, model, temperature, max_tokens):
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
     }
     payload = {
-        "model": model,         # Model name (if applicable)
-        "prompt": prompt,
+        "model": model,
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
         "temperature": temperature,
-        "max_tokens": max_tokens
+        "max_completion_tokens": max_tokens
     }
     
     try:
         response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
         data = response.json()
-        # Assuming the API returns a JSON object with a "response" field:
-        return data.get("response", "No response field in API result.")
+        # Groq Chat API typically returns a structure with "choices" array:
+        if "choices" in data and len(data["choices"]) > 0:
+            return data["choices"][0]["message"]["content"]
+        return "No valid response received."
     except requests.exceptions.RequestException as e:
-        return f"Error: {str(e)}"
+        return f"Error: {e}"
 
-# Streamlit UI
-st.title("Chat Groq Chatbot")
+st.title("Chat Groq Chatbot via Cloudflare Gateway")
 
-# Sidebar for parameters
-model = st.sidebar.selectbox("Select Model", ["chat_groq_model"])  # Update if you have multiple model options
+# Sidebar: select model and adjust parameters
+model = st.sidebar.selectbox("Select Model", ["mixtral-8x7b-32768", "llama-3.3-70b-versatile"])
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7)
-max_tokens = st.sidebar.slider("Max Tokens", min_value=50, max_value=300, value=150)
+max_tokens = st.sidebar.slider("Max Completion Tokens", min_value=50, max_value=300, value=150)
 
-st.write("Enter a negative statement, and I'll transform it into a positive perspective!")
-
+st.write("Enter your prompt and see the positive transformation!")
 user_input = st.text_input("Your prompt:")
 
 if user_input:
     result = generate_response(user_input, model, temperature, max_tokens)
     st.write("🤖 Response:", result)
 else:
-    st.write("Waiting for your input...")
+    st.write("Waiting for your prompt...")
 
     st.write("⏳ Waiting for your input...")
 
