@@ -6,7 +6,7 @@ API_KEY = "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"
 
 # Replace this with the actual endpoint URL for your Chat Groq API server.
 # For example, if you deploy it on Oracle Cloud or another host, update the URL accordingly.
-API_URL = "https://api.groq.ai/v2/generate"  # <-- Update with your actual endpoint!
+API_URL = "https://api.groq.com/openai/v1/chat/completions"  # <-- Update with your actual endpoint!
 
 def generate_response(prompt, model, temperature, max_tokens):
     headers = {
