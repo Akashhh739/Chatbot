@@ -1,24 +1,27 @@
+import os
 import streamlit as st
 import requests
+from dotenv import load_dotenv
 
-# Your Groq API key (hardcoded)
-API_KEY = "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"
+load_dotenv()
 
-# Cloudflare Gateway endpoint for Groq chat completions
+API_KEY = os.getenv("GROQ_API_KEY")
 API_URL = "https://gateway.ai.cloudflare.com/v1/b8687b6abfce956eb0b143563cd63721/b-o-t/groq/chat/completions"
 
-# Define your system prompt that instructs your bot on how to behave.
 SYSTEM_PROMPT = (
     "You are my chat bot. You will receive a negative sentence from the user and you are bound to change the perspective into something positive. "
     "Make sure the output is in 2 lines."
 )
 
+
 def generate_response(prompt, model="llama-3.3-70b-versatile", temperature=0.7, max_tokens=150):
+    if not API_KEY:
+        return "❌ GROQ_API_KEY not found. Please create a .env file with your API key."
+
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {API_KEY}"
     }
-    # Include the system message followed by the user's message.
     payload = {
         "model": model,
         "messages": [
@@ -28,7 +31,7 @@ def generate_response(prompt, model="llama-3.3-70b-versatile", temperature=0.7, 
         "temperature": temperature,
         "max_completion_tokens": max_tokens
     }
-    
+
     try:
         response = requests.post(API_URL, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
@@ -39,19 +42,22 @@ def generate_response(prompt, model="llama-3.3-70b-versatile", temperature=0.7, 
     except requests.exceptions.RequestException as e:
         return f"Error: {e}"
 
-st.title("Groq Chatbot")
 
-# Sidebar for selecting model and parameters
-model = st.sidebar.selectbox("Select Model", ["llama-3.3-70b-versatile"])
+# ── UI ─────────────────────────────────────────────────────
+st.set_page_config(page_title="Positivity Bot", page_icon="🌟")
+st.title("🌟 Positivity Reframer")
+st.caption("Turn any negative thought into a positive perspective — powered by LLaMA 3.3 via Groq.")
+
+model = st.sidebar.selectbox("Model", ["llama-3.3-70b-versatile"])
 temperature = st.sidebar.slider("Temperature", min_value=0.0, max_value=1.0, value=0.7)
-max_tokens = st.sidebar.slider("Max Completion Tokens", min_value=50, max_value=300, value=150)
+max_tokens = st.sidebar.slider("Max Tokens", min_value=50, max_value=300, value=150)
 
-st.write("Enter your prompt and get a positive transformation:")
-user_input = st.text_input("Your prompt:")
+st.write("Enter a negative sentence and get a positive reframe:")
+user_input = st.text_input("Your thought:", placeholder="e.g. I failed my exam...")
 
 if user_input:
-    result = generate_response(user_input, model, temperature, max_tokens)
-    st.write("🤖 Response:", result)
+    with st.spinner("Thinking positively..."):
+        result = generate_response(user_input, model, temperature, max_tokens)
+    st.success(result)
 else:
-    st.write("Waiting for your prompt...")
-
+    st.info("Type something negative above and press Enter.")
